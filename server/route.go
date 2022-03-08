@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func setUpRouter(s *server) {
-	r := s.router
+func setUpRouter(s *Server) {
+	r := s.Router
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",

@@ -7,8 +7,10 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
+	"github.com/phthaocse/go-gin-demo/utils"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 type DBConfig struct {
@@ -21,6 +23,9 @@ type DBConfig struct {
 
 func migrateDB(dbCon *sql.DB, dbName string) {
 	currDir, _ := os.Getwd()
+	if utils.GetEnv("IS_TESTING", "false") == "true" {
+		currDir = filepath.Dir(currDir)
+	}
 	migrateSrc := fmt.Sprintf("file://%s/db/migrations", currDir)
 	driver, _ := postgres.WithInstance(dbCon, &postgres.Config{})
 	m, _ := migrate.NewWithDatabaseInstance(

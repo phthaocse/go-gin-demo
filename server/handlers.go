@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (s *server) register() gin.HandlerFunc {
+func (s *Server) register() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var json schema.Register
 		if err := c.ShouldBindJSON(&json); err != nil {

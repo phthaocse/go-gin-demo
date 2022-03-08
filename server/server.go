@@ -7,15 +7,15 @@ import (
 	"log"
 )
 
-type server struct {
-	router     *gin.Engine
+type Server struct {
+	Router     *gin.Engine
 	db         *sql.DB
 	dbTeardown func()
 }
 
-func createServer(config *Config) *server {
-	svr := &server{}
-	svr.router = gin.Default()
+func CreateServer(config *Config) *Server {
+	svr := &Server{}
+	svr.Router = gin.Default()
 	setUpRouter(svr)
 	dbCon, dbTeardown, err := db.SetUp(&db.DBConfig{config.DbDriver, config.DbAddr, config.DbName, config.DbUser, config.DbPassword})
 	if err != nil {
@@ -28,7 +28,7 @@ func createServer(config *Config) *server {
 
 func Start() {
 	config := GetSrvConfig()
-	svr := createServer(config)
+	svr := CreateServer(config)
 	defer svr.dbTeardown()
-	svr.router.Run(config.ServerPort)
+	svr.Router.Run(config.ServerPort)
 }
