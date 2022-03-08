@@ -3,8 +3,12 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"log"
+	"os"
 )
 
 type DBConfig struct {
@@ -30,6 +34,13 @@ func SetUp(config *DBConfig) (*sql.DB, func(), error) {
 		return nil, nil, err
 	}
 	log.Println("Connect to db successfully")
+	curr_dir, _ := os.Getwd()
+	migrateSrc := fmt.Sprintf("file://%s/db/migrations", curr_dir)
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	m, err := migrate.NewWithDatabaseInstance(
+		migrateSrc,
+		config.DbName, driver)
+	m.Up()
 	teardownFunc := func() {
 		db.Close()
 	}

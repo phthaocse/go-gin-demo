@@ -30,5 +30,5 @@ func Start() {
 	config := GetSrvConfig()
 	svr := createServer(config)
 	defer svr.dbTeardown()
-	svr.router.Run()
+	svr.router.Run(config.ServerPort)
 }
