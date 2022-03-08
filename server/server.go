@@ -16,7 +16,7 @@ type server struct {
 func createServer(config *Config) *server {
 	svr := &server{}
 	svr.router = gin.Default()
-	setUpRouter(svr.router)
+	setUpRouter(svr)
 	dbCon, dbTeardown, err := db.SetUp(&db.DBConfig{config.DbDriver, config.DbAddr, config.DbName, config.DbUser, config.DbPassword})
 	if err != nil {
 		log.Panicln("Can't set up a database")

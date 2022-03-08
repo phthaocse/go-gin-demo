@@ -19,6 +19,16 @@ type DBConfig struct {
 	DbPassword string
 }
 
+func migrateDB(dbCon *sql.DB, dbName string) {
+	currDir, _ := os.Getwd()
+	migrateSrc := fmt.Sprintf("file://%s/db/migrations", currDir)
+	driver, _ := postgres.WithInstance(dbCon, &postgres.Config{})
+	m, _ := migrate.NewWithDatabaseInstance(
+		migrateSrc,
+		dbName, driver)
+	m.Up()
+}
+
 func SetUp(config *DBConfig) (*sql.DB, func(), error) {
 	var err error
 	var db *sql.DB
@@ -34,13 +44,9 @@ func SetUp(config *DBConfig) (*sql.DB, func(), error) {
 		return nil, nil, err
 	}
 	log.Println("Connect to db successfully")
-	curr_dir, _ := os.Getwd()
-	migrateSrc := fmt.Sprintf("file://%s/db/migrations", curr_dir)
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	m, err := migrate.NewWithDatabaseInstance(
-		migrateSrc,
-		config.DbName, driver)
-	m.Up()
+
+	migrateDB(db, config.DbName)
+
 	teardownFunc := func() {
 		db.Close()
 	}

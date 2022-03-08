@@ -30,7 +30,7 @@ services:
     depends_on:
       - postgres
 #    https://stackoverflow.com/questions/30063907/using-docker-compose-how-to-execute-multiple-commands:
-    command: [sh, -c, "chmod +x ./wait-for-it.sh && ./wait-for-it.sh -h 172.28.1.1 -p 5432 -t 30 -- echo DB_PASSWORD && /go-gin-demo"]
+    command: [sh, -c, "chmod +x ./wait-for-it.sh && ./wait-for-it.sh -h 172.28.1.1 -p 5432 -t 300 -- echo DB_PASSWORD && /go-gin-demo"]
     networks:
       internal_net:
         ipv4_address: 172.28.1.2
