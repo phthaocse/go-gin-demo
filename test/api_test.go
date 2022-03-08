@@ -12,14 +12,11 @@ import (
 
 var svr *server.Server
 
-func clearDB() {
-
-}
 func TestMain(m *testing.M) {
 	config := server.GetSrvConfig()
 	svr = server.CreateServer(config)
 	code := m.Run()
-	clearDB()
+	svr.DbTeardown()
 	os.Exit(code)
 }
 

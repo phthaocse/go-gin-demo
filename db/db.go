@@ -21,7 +21,7 @@ type DBConfig struct {
 	DbPassword string
 }
 
-func migrateDB(dbCon *sql.DB, dbName string) {
+func migrateDB(dbCon *sql.DB, dbName string) *migrate.Migrate {
 	currDir, _ := os.Getwd()
 	if utils.GetEnv("IS_TESTING", "false") == "true" {
 		currDir = filepath.Dir(currDir)
@@ -32,6 +32,7 @@ func migrateDB(dbCon *sql.DB, dbName string) {
 		migrateSrc,
 		dbName, driver)
 	m.Up()
+	return m
 }
 
 func SetUp(config *DBConfig) (*sql.DB, func(), error) {
@@ -50,9 +51,10 @@ func SetUp(config *DBConfig) (*sql.DB, func(), error) {
 	}
 	log.Println("Connect to db successfully")
 
-	migrateDB(db, config.DbName)
+	m := migrateDB(db, config.DbName)
 
 	teardownFunc := func() {
+		m.Drop()
 		db.Close()
 	}
 	return db, teardownFunc, nil

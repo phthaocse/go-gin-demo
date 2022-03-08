@@ -10,7 +10,7 @@ import (
 type Server struct {
 	Router     *gin.Engine
 	db         *sql.DB
-	dbTeardown func()
+	DbTeardown func()
 }
 
 func CreateServer(config *Config) *Server {
@@ -22,13 +22,12 @@ func CreateServer(config *Config) *Server {
 		log.Panicln("Can't set up a database")
 	}
 	svr.db = dbCon
-	svr.dbTeardown = dbTeardown
+	svr.DbTeardown = dbTeardown
 	return svr
 }
 
 func Start() {
 	config := GetSrvConfig()
 	svr := CreateServer(config)
-	defer svr.dbTeardown()
 	svr.Router.Run(config.ServerPort)
 }
