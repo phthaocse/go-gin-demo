@@ -11,6 +11,7 @@ type Config struct {
 	DbName     string
 	DbUser     string
 	DbPassword string
+	SecretKey  []byte
 }
 
 func GetSrvConfig() *Config {
@@ -24,6 +25,7 @@ func GetSrvConfig() *Config {
 		DbName:     utils.GetEnv("DB_NAME", "go_gin_demo"),
 		DbUser:     utils.GetEnv("DB_USER", "postgres"),
 		DbPassword: utils.GetEnv("DB_PASSWORD", ""),
+		SecretKey:  utils.GenSecretKey(),
 	}
 	return &config
 }

@@ -15,7 +15,12 @@ func (s *Server) register() gin.HandlerFunc {
 			return
 		}
 		var userid int
-		err := s.db.QueryRow(`INSERT INTO "user" (username, email)
+		res, _ := s.Db.Exec(`SELECT email FROM "user" WHERE email = $1`, json.Email)
+		if res != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "User has been existed"})
+			return
+		}
+		err := s.Db.QueryRow(`INSERT INTO "user" (username, email)
 									VALUES($1, $2) RETURNING id`, json.Username, json.Email).Scan(&userid)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

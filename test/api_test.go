@@ -2,30 +2,54 @@ package test
 
 import (
 	"bytes"
+	"database/sql"
+	"fmt"
 	"github.com/go-playground/assert/v2"
 	"github.com/phthaocse/go-gin-demo/server"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 var svr *server.Server
 
+func prepareData(dbCon *sql.DB) {
+	currDir, _ := os.Getwd()
+	sqlScript := filepath.Join(currDir, "test_data.sql")
+	queries, err := ioutil.ReadFile(sqlScript)
+	if err != nil {
+		fmt.Println("Can't read the .sql file")
+	}
+	if res, err := dbCon.Exec(string(queries)); err != nil {
+		fmt.Println("Can't execute the query", err)
+	} else {
+		fmt.Println(res)
+	}
+}
+
 func TestMain(m *testing.M) {
 	config := server.GetSrvConfig()
 	svr = server.CreateServer(config)
+	prepareData(svr.Db)
 	code := m.Run()
 	svr.DbTeardown()
 	os.Exit(code)
 }
 
 func TestRegisterBadRequest(t *testing.T) {
-	json := []byte(`{"email": "thao@email.com"}`)
+	json := []byte(`{
+		"username": "Thao Phan",
+		"email": "thao.phan@email.com",
+		"password": "12345678"
+	}`)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, `{"message":"User has been existed"}`, w.Body.String())
 }
