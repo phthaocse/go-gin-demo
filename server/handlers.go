@@ -10,33 +10,25 @@ import (
 
 func (s *Server) register() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var json schema.UserRegister
-		if err := c.ShouldBindJSON(&json); err != nil {
+		var userReg schema.UserRegister
+		if err := c.ShouldBindJSON(&userReg); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		var userid int
-		var userEmail string
 
-		err := s.Db.QueryRow(`SELECT email FROM "user" WHERE email = $1`, json.Email).Scan(&userEmail)
-		if err == nil {
+		user := models.User{Email: userReg.Email, Password: userReg.Password, Username: userReg.Username}
+		if user.IsExist(s.Db) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "User has been existed"})
 			return
 		}
 
-		hashPwd, err := utils.HashPassword(json.Password)
+		_, err := user.Create(s.Db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "err"})
-		}
-
-		err = s.Db.QueryRow(`INSERT INTO "user" (username, email, password, role)
-									VALUES($1, $2, $3, $4) RETURNING id`,
-			json.Username, json.Email, hashPwd, models.MemberRole).Scan(&userid)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			return
 		}
 		c.JSON(http.StatusCreated, gin.H{"message": "Register new user successfully"})
+		return
 	}
 }
 
@@ -47,12 +39,16 @@ func (s *Server) login() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 
-		var userEmail string
-
-		err := s.Db.QueryRow(`SELECT email FROM "user" WHERE email = $1`, userLogin.Email).Scan(&userEmail)
-		if err != nil {
+		user := models.User{Email: userLogin.Email, Password: userLogin.Password}
+		if !user.IsExist(s.Db) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Email or Password incorrect"})
 			return
 		}
+		if !utils.CheckPasswordHash(userLogin.Password, user.Password) {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Email or Password incorrect"})
+			return
+		}
+		jwt := utils.GetJWT(GetSrvConfig().SecretKey, user.Id)
+		c.JSON(http.StatusOK, gin.H{"access_token": jwt})
 	}
 }

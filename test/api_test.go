@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-playground/assert/v2"
+	"github.com/phthaocse/go-gin-demo/models"
 	"github.com/phthaocse/go-gin-demo/server"
 	"io/ioutil"
 	"net/http"
@@ -52,4 +53,65 @@ func TestRegisterBadRequest(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, `{"message":"User has been existed"}`, w.Body.String())
+}
+
+func TestRegisterSuccessfully(t *testing.T) {
+	email := "thao.phan2@email.com"
+	json := []byte(fmt.Sprintf(`{
+		"username": "Thao Phan",
+		"email": "%s",
+		"password": "12345678"
+	}`, email))
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(json))
+	svr.Router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.Equal(t, `{"message":"Register new user successfully"}`, w.Body.String())
+
+	userInDb := models.User{Email: email}
+	err := userInDb.GetByEmail(svr.Db)
+	assert.Equal(t, err, nil)
+}
+
+func TestLoginFailedWrongEmail(t *testing.T) {
+	json := []byte(`{
+		"email": "noexisted@email.com",
+		"password": "12345678"
+	}`)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	svr.Router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, `{"message":"Email or Password incorrect"}`, w.Body.String())
+}
+
+func TestLoginFailedWrongPass(t *testing.T) {
+	json := []byte(`{
+		"email": "thao.phan@email.com",
+		"password": "123456789"
+	}`)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	svr.Router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, `{"message":"Email or Password incorrect"}`, w.Body.String())
+}
+
+func TestLoginSuccessfully(t *testing.T) {
+	json := []byte(`{
+		"email": "thao.phan@email.com",
+		"password": "12345678"
+	}`)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	svr.Router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
 }

@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	"github.com/phthaocse/go-gin-demo/models"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 )
@@ -18,18 +17,10 @@ func GenSecretKey() []byte {
 	return key
 }
 
-func GetJWT(secKey []byte, user *models.User) string {
-	type MyCustomClaims struct {
-		UserRole string `json:"user_role"`
-		jwt.StandardClaims
-	}
-
-	claims := MyCustomClaims{
-		user.Role,
-		jwt.StandardClaims{
-			ExpiresAt: 15000,
-			Id:        strconv.Itoa(user.Id),
-		},
+func GetJWT(secKey []byte, userId int) string {
+	claims := jwt.StandardClaims{
+		ExpiresAt: 15000,
+		Id:        strconv.Itoa(userId),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

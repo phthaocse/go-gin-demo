@@ -8,6 +8,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/lib/pq v1.10.4
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 
 require (
@@ -25,7 +26,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/sys v0.0.0-20211013075003-97ac67df715c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
