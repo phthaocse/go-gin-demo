@@ -13,4 +13,5 @@ func setUpRouter(s *Server) {
 		})
 	})
 	r.POST("/register", s.register())
+	r.POST("/login", s.login())
 }
