@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/phthaocse/go-gin-demo/utils"
 	"net/http"
@@ -18,7 +19,9 @@ func AuthRequired(c *gin.Context) {
 	tokenString := strings.Split(authHeader.Authorization, "Bearer ")
 	if len(tokenString) == 2 {
 		if claim, err := utils.ParseJWT(tokenString[1], []byte(utils.GetEnv("SECRET_KEY", ""))); err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err})
+			fmt.Println(err.Error())
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not validate credential"})
+			return
 		} else {
 			c.Set("CurrUser", claim.UserId)
 			return

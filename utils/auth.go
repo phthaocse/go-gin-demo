@@ -54,7 +54,6 @@ func ParseJWT(tokenString string, secKey []byte) (*UserClaims, error) {
 	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
 		return claims, nil
 	} else {
-		fmt.Println(err)
 		return nil, err
 	}
 }

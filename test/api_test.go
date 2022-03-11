@@ -48,7 +48,7 @@ func TestRegisterBadRequest(t *testing.T) {
 	}`)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(json))
+	req, _ := http.NewRequest("POST", "/user/register", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -64,14 +64,14 @@ func TestRegisterSuccessfully(t *testing.T) {
 	}`, email))
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(json))
+	req, _ := http.NewRequest("POST", "/user/register", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Equal(t, `{"message":"Register new user successfully"}`, w.Body.String())
 
 	userInDb := models.User{Email: email}
-	err := userInDb.GetByEmail(svr.Db)
+	_, err := userInDb.GetByEmail(svr.Db)
 	assert.Equal(t, err, nil)
 }
 
@@ -82,7 +82,7 @@ func TestLoginFailedWrongEmail(t *testing.T) {
 	}`)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -96,7 +96,7 @@ func TestLoginFailedWrongPass(t *testing.T) {
 	}`)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -110,7 +110,7 @@ func TestLoginSuccessfully(t *testing.T) {
 	}`)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
+	req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(json))
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)

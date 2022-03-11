@@ -52,3 +52,27 @@ func (s *Server) login() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"access_token": jwt})
 	}
 }
+
+func (s *Server) getUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		param := struct {
+			UserId int `uri:"userId" binding:"required"`
+		}{}
+		if err := c.ShouldBindUri(&param); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+		reqUser, ok := c.Get("CurrUser")
+		if !ok || reqUser != param.UserId {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You don't have permission on this resource"})
+			return
+		}
+		user := models.User{Id: param.UserId}
+		err := user.GetByPk(s.Db)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
