@@ -11,10 +11,12 @@ type Server struct {
 	Router     *gin.Engine
 	Db         *sql.DB
 	DbTeardown func()
+	Config     *Config
 }
 
 func CreateServer(config *Config) *Server {
 	svr := &Server{}
+	svr.Config = config
 	svr.Router = gin.Default()
 	setUpRouter(svr)
 	dbCon, dbTeardown, err := db.SetUp(&db.DBConfig{config.DbDriver, config.DbAddr, config.DbName, config.DbUser, config.DbPassword})

@@ -48,7 +48,7 @@ func (s *Server) login() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Email or Password incorrect"})
 			return
 		}
-		jwt := utils.GetJWT(GetSrvConfig().SecretKey, user.Id)
+		jwt := utils.GetJWT(s.Config.SecretKey, user.Id)
 		c.JSON(http.StatusOK, gin.H{"access_token": jwt})
 	}
 }
