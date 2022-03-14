@@ -57,13 +57,8 @@ func (u *User) CreateFrom(row pgx.Row) error {
 	return nil
 }
 
-func (u *User) GetAll(db *sql.DB) ([]*User, error) {
-	rows, err := db.Query(`SELECT * FROM "user"`)
-	if err != nil {
-		return nil, err
-	}
+func processMultiRow(rows *sql.Rows) ([]*User, error) {
 	res := make([]*User, 0)
-	defer rows.Close()
 	for rows.Next() {
 		usr := &User{}
 		err := usr.CreateFrom(rows)
@@ -73,6 +68,24 @@ func (u *User) GetAll(db *sql.DB) ([]*User, error) {
 		res = append(res, usr)
 	}
 	return res, nil
+}
+
+func (u *User) GetMulti(db *sql.DB, limit, offset int) ([]*User, error) {
+	rows, err := db.Query(`SELECT * FROM "user" LIMIT $1 OFFSET $2`, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return processMultiRow(rows)
+}
+
+func (u *User) GetAll(db *sql.DB) ([]*User, error) {
+	rows, err := db.Query(`SELECT * FROM "user"`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return processMultiRow(rows)
 }
 
 func (u *User) GetByPk(db *sql.DB) error {

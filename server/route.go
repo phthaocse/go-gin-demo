@@ -18,6 +18,6 @@ func setUpRouter(s *Server) {
 		userRouter.POST("/register", s.register())
 		userRouter.POST("/login", s.login())
 		userRouter.GET(":userId", middleware.AuthRequired, s.getUser())
-		userRouter.GET("", middleware.AdminRequired, s.getAllUser())
+		userRouter.GET("", middleware.AuthRequired, middleware.AdminRequired, s.getAllUser())
 	}
 }

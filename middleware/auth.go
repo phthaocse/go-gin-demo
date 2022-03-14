@@ -40,7 +40,6 @@ func AuthRequired(c *gin.Context) {
 }
 
 func AdminRequired(c *gin.Context) {
-	AuthRequired(c)
 	if role, ok := c.Get("CurrUserRole"); ok {
 		if role != schema.AdminRole {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "You don't have permission on this operation"})

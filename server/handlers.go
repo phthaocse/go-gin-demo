@@ -63,7 +63,7 @@ func (s *Server) getUser() gin.HandlerFunc {
 			UserId int `uri:"userId" binding:"required"`
 		}{}
 		if err := c.ShouldBindUri(&param); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		reqUser, ok := c.Get("CurrUser")
@@ -83,8 +83,19 @@ func (s *Server) getUser() gin.HandlerFunc {
 
 func (s *Server) getAllUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var query schema.DefaultQuery
+		if err := c.ShouldBindQuery(&query); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		user := &models.User{}
-		users, err := user.GetAll(s.Db)
+		var err error
+		var users []*models.User
+		if query.Limit > 0 {
+			users, err = user.GetMulti(s.Db, query.Limit, query.Offset)
+		} else {
+			users, err = user.GetAll(s.Db)
+		}
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return

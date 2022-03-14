@@ -1,6 +1,6 @@
 package schema
 
 type DefaultQuery struct {
-	Limit  int `form:"limit"`
-	Offset int `form:"offset"`
+	Limit  int `form:"limit" binding:"gte=0"`
+	Offset int `form:"offset" binding:"gte=0"`
 }
