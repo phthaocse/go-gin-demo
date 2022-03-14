@@ -4,16 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/phthaocse/go-gin-demo/schema"
 	"github.com/phthaocse/go-gin-demo/utils"
 	"log"
 	"reflect"
 	"strings"
 	"time"
-)
-
-const (
-	AdminRole  = "admin"
-	MemberRole = "member"
 )
 
 type Model interface {
@@ -86,7 +82,7 @@ func (u *User) Create(db *sql.DB) (int, error) {
 	if err != nil {
 		return 0, errors.New("can't hash password")
 	}
-	err = db.QueryRow(query, u.Username, u.Email, hashPwd, MemberRole).Scan(&userId)
+	err = db.QueryRow(query, u.Username, u.Email, hashPwd, schema.MemberRole.String()).Scan(&userId)
 	if err != nil {
 		return 0, err
 	}

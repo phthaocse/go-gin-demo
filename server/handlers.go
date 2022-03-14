@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/phthaocse/go-gin-demo/models"
 	"github.com/phthaocse/go-gin-demo/schema"
@@ -48,7 +49,7 @@ func (s *Server) login() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Email or Password incorrect"})
 			return
 		}
-		jwt := utils.GetJWT(s.Config.SecretKey, user.Id)
+		jwt := utils.GetJWT(s.Config.SecretKey, user.Id, user.Role)
 		c.JSON(http.StatusOK, gin.H{"access_token": jwt})
 	}
 }
@@ -74,5 +75,12 @@ func (s *Server) getUser() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
+func (s *Server) getAllUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		fmt.Println(c)
+		return
 	}
 }

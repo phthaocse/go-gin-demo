@@ -11,6 +11,7 @@ import (
 
 type UserClaims struct {
 	UserId int
+	Role   string
 	jwt.StandardClaims
 }
 
@@ -27,9 +28,10 @@ func GenSecretKey() []byte {
 	return key
 }
 
-func GetJWT(secKey []byte, userId int) string {
+func GetJWT(secKey []byte, userId int, userRole string) string {
 	claims := UserClaims{
 		userId,
+		userRole,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
 		}}
