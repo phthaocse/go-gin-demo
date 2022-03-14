@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestRegisterBadRequest(t *testing.T) {
+func TestRegisterBadRequestExistedEmail(t *testing.T) {
 	json := []byte(`{
 		"username": "Thao Phan",
 		"email": "thao.phan@email.com",
@@ -52,7 +52,22 @@ func TestRegisterBadRequest(t *testing.T) {
 	svr.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, `{"message":"User has been existed"}`, w.Body.String())
+	assert.Equal(t, `{"error":"User has been existed"}`, w.Body.String())
+}
+
+func TestRegisterBadRequestDuplicatedUsername(t *testing.T) {
+	json := []byte(`{
+		"username": "admin",
+		"email": "test@email.com",
+		"password": "12345678"
+	}`)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/user/register", bytes.NewBuffer(json))
+	svr.Router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, `{"error":"Username has been existed"}`, w.Body.String())
 }
 
 func TestRegisterSuccessfully(t *testing.T) {

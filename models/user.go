@@ -61,12 +61,32 @@ func (u *User) GetByPk(db *sql.DB) error {
 	return nil
 }
 
+func (u *User) CreateFrom(row *sql.Row) error {
+	err := row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.IsActive, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *User) GetByEmail(db *sql.DB) (*User, error) {
 	row := db.QueryRow(`SELECT * FROM "user" WHERE email = $1`, u.Email)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
-	err := row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.IsActive, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	err := u.CreateFrom(row)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (u *User) GetByUsername(db *sql.DB) (*User, error) {
+	row := db.QueryRow(`SELECT * FROM "user" WHERE username = $1`, u.Username)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+	err := u.CreateFrom(row)
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +111,15 @@ func (u *User) Create(db *sql.DB) (int, error) {
 
 func (u *User) IsExist(db *sql.DB) bool {
 	user, err := u.GetByEmail(db)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return user != nil
+}
+
+func (u *User) IsUsernameExisted(db *sql.DB) bool {
+	user, err := u.GetByUsername(db)
 	if err != nil {
 		log.Println(err)
 		return false

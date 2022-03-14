@@ -19,7 +19,11 @@ func (s *Server) register() gin.HandlerFunc {
 
 		user := models.User{Email: userReg.Email, Password: userReg.Password, Username: userReg.Username}
 		if user.IsExist(s.Db) {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "User has been existed"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "User has been existed"})
+			return
+		}
+		if user.IsUsernameExisted(s.Db) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Username has been existed"})
 			return
 		}
 
