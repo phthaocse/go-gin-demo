@@ -28,6 +28,7 @@ func AuthRequired(c *gin.Context) {
 			usrRole, err := schema.Role(claim.Role)
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not validate credential"})
+				return
 			}
 			c.Set("CurrUserRole", usrRole)
 			return

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 	"github.com/phthaocse/go-gin-demo/schema"
 	"github.com/phthaocse/go-gin-demo/utils"
 	"log"
@@ -48,24 +49,42 @@ type User struct {
 	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
+func (u *User) CreateFrom(row pgx.Row) error {
+	err := row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.IsActive, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *User) GetAll(db *sql.DB) ([]*User, error) {
+	rows, err := db.Query(`SELECT * FROM "user"`)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*User, 0)
+	defer rows.Close()
+	for rows.Next() {
+		usr := &User{}
+		err := usr.CreateFrom(rows)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, usr)
+	}
+	return res, nil
+}
+
 func (u *User) GetByPk(db *sql.DB) error {
 	row, err := GetByPK(u, db)
 	if err != nil {
 		return err
 	}
-	err = row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.IsActive, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	err = u.CreateFrom(row)
 	if err != nil {
 		return err
 	}
 	u.Password = ""
-	return nil
-}
-
-func (u *User) CreateFrom(row *sql.Row) error {
-	err := row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.IsActive, &u.Role, &u.CreatedAt, &u.UpdatedAt)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

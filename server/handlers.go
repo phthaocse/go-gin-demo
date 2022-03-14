@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/phthaocse/go-gin-demo/models"
 	"github.com/phthaocse/go-gin-demo/schema"
@@ -84,7 +83,13 @@ func (s *Server) getUser() gin.HandlerFunc {
 
 func (s *Server) getAllUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println(c)
+		user := &models.User{}
+		users, err := user.GetAll(s.Db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"users": users})
 		return
 	}
 }
