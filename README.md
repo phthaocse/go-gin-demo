@@ -15,3 +15,12 @@ curl --request POST 'localhost:8000/user/register' \
     "password": "12345678"
 }'
 ```
+
+- APIs
+```azure
+POST   /user/register 
+POST   /user/login
+GET    /user/:userId
+GET    /user 
+PATCH  /user/:userId/active-status
+```
