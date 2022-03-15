@@ -104,3 +104,30 @@ func (s *Server) getAllUser() gin.HandlerFunc {
 		return
 	}
 }
+
+func (s *Server) UpdateActiveStatus() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		param := struct {
+			UserId int `uri:"userId" binding:"required"`
+		}{}
+		if err := c.ShouldBindUri(&param); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		var payload = struct {
+			ActiveStatus *bool `json:"active_status" binding:"required"`
+		}{}
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		user := &models.User{Id: param.UserId}
+		err := user.UpdateActiveStatus(s.Db, *payload.ActiveStatus)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"user": user})
+		return
+	}
+}

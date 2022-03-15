@@ -19,5 +19,6 @@ func setUpRouter(s *Server) {
 		userRouter.POST("/login", s.login())
 		userRouter.GET(":userId", middleware.AuthRequired, s.getUser())
 		userRouter.GET("", middleware.AuthRequired, middleware.AdminRequired, s.getAllUser())
+		userRouter.PATCH(":userId/active-status", middleware.AuthRequired, middleware.AdminRequired, s.UpdateActiveStatus())
 	}
 }

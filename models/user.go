@@ -141,6 +141,19 @@ func (u *User) Create(db *sql.DB) (int, error) {
 	return userId, nil
 }
 
+func (u *User) UpdateActiveStatus(db *sql.DB, status bool) error {
+	query := `UPDATE "user" 
+    	SET is_active = $1
+    	WHERE id = $2
+		RETURNING *`
+	row := db.QueryRow(query, status, u.Id)
+	err := u.CreateFrom(row)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *User) IsExist(db *sql.DB) bool {
 	user, err := u.GetByEmail(db)
 	if err != nil {
