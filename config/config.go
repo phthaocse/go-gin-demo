@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"github.com/phthaocse/go-gin-demo/utils"
@@ -29,3 +29,5 @@ func GetSrvConfig() *Config {
 	}
 	return &config
 }
+
+var DefaultConfig = GetSrvConfig()

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-playground/assert/v2"
+	"github.com/phthaocse/go-gin-demo/config"
 	"github.com/phthaocse/go-gin-demo/models"
 	"github.com/phthaocse/go-gin-demo/server"
 	"io/ioutil"
@@ -32,7 +33,7 @@ func prepareData(dbCon *sql.DB) {
 }
 
 func TestMain(m *testing.M) {
-	config := server.GetSrvConfig()
+	config := config.GetSrvConfig()
 	svr = server.CreateServer(config)
 	prepareData(svr.Db)
 	code := m.Run()

@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/phthaocse/go-gin-demo/config"
 	"github.com/phthaocse/go-gin-demo/schema"
 	"github.com/phthaocse/go-gin-demo/utils"
 	"net/http"
@@ -19,8 +20,9 @@ func AuthRequired(c *gin.Context) {
 	}
 	tokenString := strings.Split(authHeader.Authorization, "Bearer ")
 	if len(tokenString) == 2 {
-		if claim, err := utils.ParseJWT(tokenString[1], []byte(utils.GetEnv("SECRET_KEY", ""))); err != nil {
+		if claim, err := utils.ParseJWT(tokenString[1], config.DefaultConfig.SecretKey); err != nil {
 			fmt.Println(err.Error())
+			fmt.Println(config.DefaultConfig.SecretKey)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not validate credential"})
 			return
 		} else {

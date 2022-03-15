@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/phthaocse/go-gin-demo/config"
 	"github.com/phthaocse/go-gin-demo/db"
 	"log"
 )
@@ -11,10 +12,10 @@ type Server struct {
 	Router     *gin.Engine
 	Db         *sql.DB
 	DbTeardown func()
-	Config     *Config
+	Config     *config.Config
 }
 
-func CreateServer(config *Config) *Server {
+func CreateServer(config *config.Config) *Server {
 	svr := &Server{}
 	svr.Config = config
 	svr.Router = gin.Default()
@@ -29,7 +30,7 @@ func CreateServer(config *Config) *Server {
 }
 
 func Start() {
-	config := GetSrvConfig()
+	config := config.DefaultConfig
 	svr := CreateServer(config)
 	svr.Router.Run(config.ServerPort)
 }
