@@ -9,6 +9,18 @@ CREATE TABLE IF NOT EXISTS "user"(
     updated_at TIMESTAMP
 );
 
+
+CREATE TABLE IF NOT EXISTS "ticket" (
+    id SERIAL PRIMARY KEY,
+    reporter INT REFERENCES "user"(id) ON DELETE CASCADE,
+    assignee INT REFERENCES "user"(id) ON DELETE SET NULL,
+    title TEXT NOT NULL,
+    content TEXT,
+    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP
+);
+
+
 INSERT INTO "user"
 (email, username, password, role)
 VALUES ('admin@email.com', 'admin', '$2a$10$fPRhQRIV.q8h2v.jjKJPWeuapcowrI1fUtQ6VvnN35uC3PZaukLn.', 'admin');

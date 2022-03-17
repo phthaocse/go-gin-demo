@@ -1,1 +1,2 @@
+DROP TABLE "ticket" IF EXISTS;
 DROP TABLE "user" IF EXISTS;
