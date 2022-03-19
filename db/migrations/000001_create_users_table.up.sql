@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "user"(
 CREATE TABLE IF NOT EXISTS "ticket" (
     id SERIAL PRIMARY KEY,
     reporter INT REFERENCES "user"(id) ON DELETE CASCADE,
-    assignee INT REFERENCES "user"(id) ON DELETE SET NULL,
+    assignee INT REFERENCES "user"(id) ON DELETE SET NULL  DEFAULT NULL,
     title TEXT NOT NULL,
     content TEXT,
     created_at  TIMESTAMP NOT NULL DEFAULT now(),

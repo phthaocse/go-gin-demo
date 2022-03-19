@@ -21,4 +21,8 @@ func setUpRouter(s *Server) {
 		userRouter.GET("", middleware.AuthRequired, middleware.AdminRequired, s.getAllUser())
 		userRouter.PATCH(":userId/active-status", middleware.AuthRequired, middleware.AdminRequired, s.UpdateActiveStatus())
 	}
+	ticketRouter := r.Group("/ticket")
+	{
+		ticketRouter.POST("", middleware.AuthRequired, s.createTicket())
+	}
 }

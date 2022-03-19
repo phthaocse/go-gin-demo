@@ -131,3 +131,30 @@ func (s *Server) UpdateActiveStatus() gin.HandlerFunc {
 		return
 	}
 }
+
+func (s *Server) createTicket() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ticketPayload schema.Ticket
+		if err := c.ShouldBindJSON(&ticketPayload); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		ticket := &models.Ticket{Title: ticketPayload.Title, Assignee: ticketPayload.Assignee, Content: ticketPayload.Content}
+
+		if val, ok := c.Get("CurrUser"); ok {
+			ticket.Reporter = val.(int)
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Can't get request user"})
+		}
+
+		err := ticket.Create(s.Db)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{"data": ticket})
+		return
+	}
+}
