@@ -13,13 +13,13 @@ const (
 )
 
 type Ticket struct {
-	Id        int         `json:"id"`
-	Reporter  int         `json:"reporter"`
-	Assignee  *int        `json:"assignee"`
-	Title     string      `json:"title"`
-	Content   string      `json:"content"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt pq.NullTime `json:"updated_at"`
+	Id        int        `json:"id"`
+	Reporter  int        `json:"reporter"`
+	Assignee  *int       `json:"assignee"`
+	Title     string     `json:"title"`
+	Content   string     `json:"content"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 func (t *Ticket) Create(db *sql.DB) error {

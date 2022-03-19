@@ -11,14 +11,14 @@ import (
 )
 
 type User struct {
-	Id        int          `db:"pk" json:"id"`
-	Username  string       `json:"username"`
-	Email     string       `json:"email"`
-	Password  string       `json:"-"`
-	Role      string       `json:"role"`
-	IsActive  bool         `json:"is_active"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
+	Id        int        `db:"pk" json:"id"`
+	Username  string     `json:"username"`
+	Email     string     `json:"email"`
+	Password  string     `json:"-"`
+	Role      string     `json:"role"`
+	IsActive  bool       `json:"is_active"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 func (u *User) CreateFrom(row pgx.Row) error {
